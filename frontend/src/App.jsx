@@ -14,8 +14,8 @@ import PrivateLayout from "@layouts/PrivateLayout";
 import Login from "@pages/public/Login";
 
 // private
-import Home from "@pages/private/Home";
-import Admin from "@pages/private/Admin";
+import Home from "@pages/private/home/Home";
+import Admin from "@pages/private/admin/Admin";
 // const Home = lazy(() => import("@pages/private/Home"));
 
 const App = () => {
