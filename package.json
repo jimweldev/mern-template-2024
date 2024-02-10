@@ -1,0 +1,16 @@
+{
+  "name": "mern-template",
+  "version": "1.0.0",
+  "description": "MERN Template",
+  "main": "index.js",
+  "scripts": {
+    "server": "npm run dev --prefix backend",
+    "client": "npm run dev --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "author": "Jimwel Dizon",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
