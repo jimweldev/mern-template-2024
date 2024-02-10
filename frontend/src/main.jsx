@@ -39,7 +39,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@adminkit/core/dist/css/app.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 import "react-toastify/dist/ReactToastify.css";
-import "react-quill/dist/quill.snow.css";
 import "@assets/index.css";
 
 const queryClient = new QueryClient();
