@@ -56,7 +56,7 @@ const login = async (req, res) => {
     .cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "development" ? false : true,
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
     })
     .status(200)
     .json({ user, accessToken });
@@ -119,7 +119,7 @@ const register = async (req, res) => {
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "development" ? false : true,
-        sameSite: "lax",
+        sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
       })
       .status(201)
       .json({ user, accessToken });
@@ -152,7 +152,7 @@ const refresh = async (req, res) => {
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "development" ? false : true,
-        sameSite: "lax",
+        sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
       })
       .status(200)
       .json({ user, accessToken });
