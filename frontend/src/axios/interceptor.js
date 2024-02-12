@@ -36,7 +36,6 @@ privateInstance.interceptors.response.use(
       }
 
       if (response.status === 204) {
-        // USE THE REMOVE AUTH HERE
         useAuthStore.getState().removeAuth();
         localStorage.removeItem("accessToken");
       }

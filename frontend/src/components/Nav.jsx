@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FiHome, FiPieChart } from "react-icons/fi";
 
 const Nav = ({ auth, isSidebarCollapsed }) => {
   return (
@@ -13,10 +13,7 @@ const Nav = ({ auth, isSidebarCollapsed }) => {
           {/* <li className="sidebar-header">Pages</li> */}
           <li className="sidebar-item">
             <NavLink className="sidebar-link" to="/">
-              <FontAwesomeIcon
-                className="feather align-middle"
-                icon="fa-solid fa-home"
-              />
+              <FiPieChart className="feather" />
               <span className="align-middle">
                 {auth.isAdmin ? "Admin" : "Home"}
               </span>
@@ -25,10 +22,7 @@ const Nav = ({ auth, isSidebarCollapsed }) => {
           {auth.isAdmin && (
             <li className="sidebar-item">
               <NavLink className="sidebar-link" to="/home">
-                <FontAwesomeIcon
-                  className="feather align-middle"
-                  icon="fa-solid fa-home"
-                />
+                <FiHome className="feather" />
                 Home
               </NavLink>
             </li>

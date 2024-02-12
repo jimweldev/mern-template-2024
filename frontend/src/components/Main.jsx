@@ -1,10 +1,36 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { privateInstance } from "@axios/interceptor";
+import { toast } from "react-toastify";
+import {
+  FiBell,
+  FiLogOut,
+  FiMessageSquare,
+  FiSettings,
+  FiUser,
+} from "react-icons/fi";
 
 import Avatar from "@assets/avatar.png";
 
 const Main = ({ auth, removeAuth, handleSetIsSidebarCollapsed }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogout = () => {
+    setIsLoading(true);
+    privateInstance
+      .get("/api/auth/logout")
+      .then(function () {
+        removeAuth();
+        localStorage.removeItem("accessToken");
+      })
+      .catch(function (error) {
+        toast.error(error.response.data.message);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
   return (
     <div className="main">
       <nav className="navbar navbar-expand navbar-light navbar-bg">
@@ -19,8 +45,7 @@ const Main = ({ auth, removeAuth, handleSetIsSidebarCollapsed }) => {
             <li className="nav-item dropdown">
               <a className="nav-icon dropdown-toggle" data-bs-toggle="dropdown">
                 <div className="position-relative">
-                  {/* <FiBell className="feather" /> */}
-                  <FontAwesomeIcon icon="fa-regular fa-bell" />
+                  <FiBell />
                   <span className="indicator">4</span>
                 </div>
               </a>
@@ -33,11 +58,7 @@ const Main = ({ auth, removeAuth, handleSetIsSidebarCollapsed }) => {
                   <a className="list-group-item">
                     <div className="row g-0 align-items-center">
                       <div className="col-2">
-                        {/* <FiMessageSquare className="feather" /> */}
-                        <FontAwesomeIcon
-                          className="feather"
-                          icon="fa-solid fa-bell"
-                        />
+                        <FiBell className="feather" />
                       </div>
                       <div className="col-10">
                         <div className="text-dark">Update completed</div>
@@ -57,8 +78,7 @@ const Main = ({ auth, removeAuth, handleSetIsSidebarCollapsed }) => {
             <li className="nav-item dropdown">
               <a className="nav-icon dropdown-toggle" data-bs-toggle="dropdown">
                 <div className="position-relative">
-                  {/* <FiMessageSquare className="feather" /> */}
-                  <FontAwesomeIcon icon="fa-regular fa-message" />
+                  <FiMessageSquare />
                 </div>
               </a>
               <div
@@ -98,7 +118,7 @@ const Main = ({ auth, removeAuth, handleSetIsSidebarCollapsed }) => {
                 className="nav-icon dropdown-toggle d-inline-block d-sm-none"
                 data-bs-toggle="dropdown"
               >
-                <FontAwesomeIcon icon="fa-solid fa-gear" />
+                <FiSettings />
               </a>
               <a
                 className="nav-link dropdown-toggle d-none d-sm-inline-block"
@@ -113,18 +133,18 @@ const Main = ({ auth, removeAuth, handleSetIsSidebarCollapsed }) => {
               </a>
               <div className="dropdown-menu dropdown-menu-end">
                 <a className="dropdown-item">
-                  <FontAwesomeIcon icon="fa-regular fa-user" />
+                  <FiUser className="feather" />
                   <span className="ms-2">Profile</span>
                 </a>
 
                 <button
                   className="dropdown-item"
+                  disabled={isLoading}
                   onClick={() => {
-                    removeAuth();
-                    localStorage.removeItem("accessToken");
+                    handleLogout();
                   }}
                 >
-                  <FontAwesomeIcon icon="fa-solid fa-arrow-right-from-bracket" />
+                  <FiLogOut className="feather" />
                   <span className="ms-2">Log out</span>
                 </button>
               </div>
