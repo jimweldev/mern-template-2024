@@ -28,7 +28,6 @@ const Login = () => {
         localStorage.setItem("accessToken", response.data.accessToken);
       })
       .catch(function (error) {
-        console.log(error.response.data.message);
         toast.error(error.response.data.message);
       })
       .finally(() => {

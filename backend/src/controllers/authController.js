@@ -6,13 +6,19 @@ const User = require("../models/userModel");
 
 const generateAccessToken = (_id) => {
   return jwt.sign({ _id: _id }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: process.env.ACCESS_TOKEN_EXPIRATION,
+    expiresIn:
+      process.env.NODE_ENV === "development"
+        ? "10y"
+        : process.env.ACCESS_TOKEN_EXPIRATION,
   });
 };
 
 const generateRefreshToken = (_id) => {
   return jwt.sign({ _id: _id }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: process.env.REFRESH_TOKEN_EXPIRATION,
+    expiresIn:
+      process.env.NODE_ENV === "development"
+        ? "10y"
+        : process.env.REFRESH_TOKEN_EXPIRATION,
   });
 };
 
@@ -49,8 +55,8 @@ const login = async (req, res) => {
   return res
     .cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: process.env.NODE_ENV === "development" ? false : true,
+      sameSite: "lax",
     })
     .status(200)
     .json({ user, accessToken });
@@ -112,8 +118,8 @@ const register = async (req, res) => {
     res
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        // secure: true,
-        // sameSite: "lax",
+        secure: process.env.NODE_ENV === "development" ? false : true,
+        sameSite: "lax",
       })
       .status(201)
       .json({ user, accessToken });
@@ -126,8 +132,6 @@ const register = async (req, res) => {
 const refresh = async (req, res) => {
   let { refreshToken } = req.cookies;
 
-  console.log({ refreshToken });
-
   if (!refreshToken) {
     return res.status(204).json({ message: "Refresh token required" });
   }
@@ -135,7 +139,9 @@ const refresh = async (req, res) => {
   try {
     const { _id } = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
-    const user = await User.findById({ _id });
+    const user = await User.findById({ _id }).select(
+      "-password -createdAt -updatedAt -__v"
+    );
 
     refreshToken = generateRefreshToken(user._id);
 
@@ -145,8 +151,8 @@ const refresh = async (req, res) => {
     return res
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: "None",
+        secure: process.env.NODE_ENV === "development" ? false : true,
+        sameSite: "lax",
       })
       .status(200)
       .json({ user, accessToken });

@@ -14,7 +14,9 @@ const authMiddleware = async (req, res, next) => {
   try {
     const { _id } = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
 
-    req.user = await User.findById({ _id }).select("-password");
+    req.user = await User.findById({ _id }).select(
+      "-password -createdAt -updatedAt -__v"
+    );
 
     next();
   } catch (error) {
