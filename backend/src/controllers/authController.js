@@ -10,6 +10,12 @@ const generateAccessToken = (_id) => {
   });
 };
 
+const generateRefreshToken = (_id) => {
+  return jwt.sign({ _id: _id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRATION,
+  });
+};
+
 // Login
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -38,8 +44,16 @@ const login = async (req, res) => {
 
   // generate access token
   const accessToken = generateAccessToken(user._id);
+  const refreshToken = generateRefreshToken(user._id);
 
-  res.status(200).json({ user, accessToken });
+  return res
+    .cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    })
+    .status(200)
+    .json({ user, accessToken });
 };
 
 // Register
@@ -93,20 +107,68 @@ const register = async (req, res) => {
 
     // generate access token
     const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
 
-    res.status(201).json({ user, accessToken });
+    res
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        // secure: true,
+        // sameSite: "lax",
+      })
+      .status(201)
+      .json({ user, accessToken });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
+// Refresh
+const refresh = async (req, res) => {
+  let { refreshToken } = req.cookies;
+
+  console.log({ refreshToken });
+
+  if (!refreshToken) {
+    return res.status(204).json({ message: "Refresh token required" });
+  }
+
+  try {
+    const { _id } = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    const user = await User.findById({ _id });
+
+    refreshToken = generateRefreshToken(user._id);
+
+    // generate access token
+    const accessToken = generateAccessToken(user._id);
+
+    return res
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+      })
+      .status(200)
+      .json({ user, accessToken });
+  } catch (error) {
+    return res
+      .clearCookie("refreshToken")
+      .status(204)
+      .json({ message: "Refresh token required" });
+  }
+};
+
 // Logout
 const logout = async (req, res) => {
-  res.status(200).json({ message: "Successfully logged out" });
+  return res
+    .clearCookie("refreshToken")
+    .status(200)
+    .json({ message: "Successfully logged out" });
 };
 
 module.exports = {
   login,
   register,
+  refresh,
   logout,
 };

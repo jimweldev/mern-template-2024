@@ -6,7 +6,7 @@ const authMiddleware = async (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer")) {
-    return res.status(401).json({ error: "Authorization token required" });
+    return res.status(401).json({ message: "Authorization token required" });
   }
 
   const accessToken = authorization.split(" ")[1];
@@ -18,7 +18,7 @@ const authMiddleware = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return res.status(401).json({ error: "Authorization token expired" });
+    return res.status(401).json({ message: error.message });
   }
 };
 

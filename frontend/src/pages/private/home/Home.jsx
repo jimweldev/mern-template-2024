@@ -97,8 +97,8 @@ const Home = () => {
               {/* has records */}
               {!isLoading &&
                 !isError &&
-                posts.records.length !== 0 &&
-                posts.records.map((post) => {
+                posts?.records.length !== 0 &&
+                posts?.records.map((post) => {
                   return (
                     <tr key={post._id}>
                       <td>{post._id}</td>
