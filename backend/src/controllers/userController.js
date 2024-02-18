@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const User = require("../models/userModel");
 
 // get all
-const getUsers = async (req, res) => {
+const getAllUsers = async (req, res) => {
   const users = await User.find({})
     .sort({ createdAt: -1 })
     .select("-password -__v");
@@ -30,14 +30,14 @@ const getUser = async (req, res) => {
 
 // create one
 const createUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
 
-  if (!email || !password) {
+  if (!email || !password || !name) {
     return res.status(400).json({ message: "Check all required fields" });
   }
 
   try {
-    const user = await User.create({ email, password });
+    const user = await User.create({ email, password, name });
 
     res.status(201).json(user);
   } catch (error) {
@@ -60,6 +60,7 @@ const updateUser = async (req, res) => {
         ...req.body,
       },
       {
+        validateBeforeSave: true,
         new: true,
       }
     ).select("-password -__v");
@@ -98,7 +99,7 @@ const deleteUser = async (req, res) => {
 };
 
 // get all
-const getUsersPaginate = async (req, res) => {
+const getAllUsersPaginate = async (req, res) => {
   let page = req.query.page || 1;
   let limit = req.query.limit || 10;
   let search = req.query.search || "";
@@ -178,10 +179,10 @@ const getUsersPaginate = async (req, res) => {
 };
 
 module.exports = {
-  getUsers,
+  getAllUsers,
   getUser,
   createUser,
   updateUser,
   deleteUser,
-  getUsersPaginate,
+  getAllUsersPaginate,
 };

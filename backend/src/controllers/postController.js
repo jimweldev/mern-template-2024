@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Post = require("../models/postModel");
 
 // get all
-const getPosts = async (req, res) => {
+const getAllPosts = async (req, res) => {
   const posts = await Post.find({}).sort({ createdAt: -1 });
 
   res.status(200).json(posts);
@@ -58,6 +58,7 @@ const updatePost = async (req, res) => {
         ...req.body,
       },
       {
+        validateBeforeSave: true,
         new: true,
       }
     );
@@ -94,7 +95,7 @@ const deletePost = async (req, res) => {
 };
 
 // get all
-const getPostsPaginate = async (req, res) => {
+const getAllPostsPaginate = async (req, res) => {
   let page = req.query.page || 1;
   let limit = req.query.limit || 10;
   let search = req.query.search || "";
@@ -168,10 +169,10 @@ const getPostsPaginate = async (req, res) => {
 };
 
 module.exports = {
-  getPosts,
+  getAllPosts,
   getPost,
   createPost,
   updatePost,
   deletePost,
-  getPostsPaginate,
+  getAllPostsPaginate,
 };

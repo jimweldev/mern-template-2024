@@ -15,6 +15,23 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    isAdmin: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    status: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+      default: "enabled",
+    },
   },
   { timestamps: true }
 );

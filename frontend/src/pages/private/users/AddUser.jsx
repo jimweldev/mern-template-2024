@@ -5,31 +5,31 @@ import { toast } from "react-toastify";
 
 import Portal from "@components/Portal";
 
-const AddPost = ({ refetchPosts }) => {
+const AddUser = ({ refetchUsers }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const {
-    register: registerAddPost,
-    handleSubmit: handleSubmitAddPost,
-    formState: { errors: errorsAddPost },
-    reset: resetAddPost,
-    setFocus: setFocusAddPost,
+    register: registerAddUser,
+    handleSubmit: handleSubmitAddUser,
+    formState: { errors: errorsAddUser },
+    reset: resetAddUser,
+    setFocus: setFocusAddUser,
   } = useForm();
 
   const onSubmit = (data) => {
     setIsLoading(true);
 
     privateInstance
-      .post(`/api/posts`, data)
+      .post(`/api/users`, data)
       .then((res) => {
-        resetAddPost();
+        resetAddUser();
 
         setTimeout(() => {
-          setFocusAddPost("title");
+          setFocusAddUser("title");
         }, 0);
 
-        refetchPosts();
-        toast.success("Successfully created a post!");
+        refetchUsers();
+        toast.success("Successfully created a user!");
       })
       .catch((error) => {
         toast.error(error.response.data.message);
@@ -43,14 +43,14 @@ const AddPost = ({ refetchPosts }) => {
     <Portal>
       <form
         className="modal fade"
-        id="addPostModal"
+        id="addUserModal"
         tabIndex="-1"
-        onSubmit={handleSubmitAddPost(onSubmit)}
+        onSubmit={handleSubmitAddUser(onSubmit)}
       >
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h1 className="modal-title fs-5">Add Post</h1>
+              <h1 className="modal-title fs-5">Add User</h1>
               <button
                 type="button"
                 className="btn-close"
@@ -63,10 +63,10 @@ const AddPost = ({ refetchPosts }) => {
                 <input
                   className="form-control"
                   type="text"
-                  {...registerAddPost("title", { required: true })}
+                  {...registerAddUser("title", { required: true })}
                 />
                 <div>
-                  {errorsAddPost.title && (
+                  {errorsAddUser.title && (
                     <div className="text-danger small">
                       This field is required
                     </div>
@@ -97,4 +97,4 @@ const AddPost = ({ refetchPosts }) => {
   );
 };
 
-export default AddPost;
+export default AddUser;

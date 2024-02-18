@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { privateInstance } from "@axios/interceptor";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 // hooks
 import useDebounce from "@hooks/useDebounce";
@@ -10,14 +11,14 @@ import Table from "@components/Table";
 import TableField from "@components/TableField";
 import TableFallback from "@components/TableFallback";
 
-import AddPost from "./AddPost";
-import EditPost from "./EditPost";
-import DeletePost from "./DeletePost";
+import AddUser from "./AddUser";
+import EditUser from "./EditUser";
+import DeleteUser from "./DeleteUser";
 
 import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
 
-const Home = () => {
-  const [selectedPost, setSelectedPost] = useState(null);
+const Users = () => {
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const [search, setSearch] = useState("");
   const [limit, setLimit] = useState(10);
@@ -27,19 +28,19 @@ const Home = () => {
   const debouncedSearchTerm = useDebounce(search, 200);
 
   const {
-    data: posts,
-    isLoading: isLoadingPosts,
-    isError: isErrorPosts,
-    refetch: refetchPosts,
+    data: users,
+    isLoading: isLoadingUsers,
+    isError: isErrorUsers,
+    refetch: refetchUsers,
   } = useQuery({
     queryKey: [
-      "posts/paginate",
+      "users/paginate",
       { page, limit, sort, search: debouncedSearchTerm },
     ],
     queryFn: () =>
       privateInstance
         .get(
-          `/api/posts/paginate?page=${page}&limit=${limit}&sort=${sort}&search=${debouncedSearchTerm}`
+          `/api/users/paginate?page=${page}&limit=${limit}&sort=${sort}&search=${debouncedSearchTerm}`
         )
         .then((res) => res.data),
     keepPreviousData: true,
@@ -49,15 +50,34 @@ const Home = () => {
     setPage(1);
     setSearch(search);
   };
+
   const handleLimit = (limit) => {
     setPage(1);
     setLimit(limit);
   };
+
   const handleSort = (field) => {
     field === sort ? setSort(`-${field}`) : setSort(field);
     setPage(1);
   };
-  const handlePage = (page) => setPage(page);
+
+  const handlePage = (page) => {
+    setPage(page);
+  };
+
+  const handleAdminChange = (e, user) => {
+    const isChecked = e.target.checked;
+
+    privateInstance
+      .patch(`/api/users/${user._id}`, { isAdmin: isChecked })
+      .then(() => {
+        refetchUsers();
+        toast.success("Successfully updated the user!");
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+  };
 
   return (
     <>
@@ -66,7 +86,7 @@ const Home = () => {
         <button
           className="btn btn-primary btn-sm"
           data-bs-toggle="modal"
-          data-bs-target="#addPostModal"
+          data-bs-target="#addUserModal"
         >
           Add
         </button>
@@ -80,38 +100,61 @@ const Home = () => {
             handlePage={handlePage}
             limit={limit}
             page={page}
-            data={posts}
+            data={users}
           >
             <thead>
               <tr>
                 <th onClick={() => handleSort("_id")}>
                   <TableField column="ID" field="_id" sort={sort} />
                 </th>
-                <th onClick={() => handleSort("title")}>
-                  <TableField column="Title" field="title" sort={sort} />
+                <th onClick={() => handleSort("name")}>
+                  <TableField column="Name" field="name" sort={sort} />
                 </th>
+                <th onClick={() => handleSort("status")}>
+                  <TableField column="Status" field="status" sort={sort} />
+                </th>
+                <th>Admin</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {/* has records */}
-              {!isLoadingPosts &&
-                !isErrorPosts &&
-                posts?.records.length !== 0 &&
-                posts?.records.map((post) => {
+              {!isLoadingUsers &&
+                !isErrorUsers &&
+                users?.records.length !== 0 &&
+                users?.records.map((user) => {
                   return (
-                    <tr key={post._id}>
-                      <td>{post._id}</td>
-                      <td>{post.title}</td>
+                    <tr key={user._id}>
+                      <td>{user._id}</td>
+                      <td>{user.name}</td>
+                      <td>
+                        {user.status === "enabled" ? (
+                          <span className="badge bg-success">enabled</span>
+                        ) : (
+                          <span className="badge bg-danger">disabled</span>
+                        )}
+                      </td>
+                      <td>
+                        <div className="form-check form-switch mb-0">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            checked={user.isAdmin}
+                            onChange={(e) => {
+                              handleAdminChange(e, user);
+                            }}
+                          />
+                        </div>
+                      </td>
                       <td>
                         <div className="btn-group btn-group-sm">
                           <button
                             title="Edit"
                             className="btn btn-info btn-sm"
                             data-bs-toggle="modal"
-                            data-bs-target="#editPostModal"
+                            data-bs-target="#editUserModal"
                             onClick={() => {
-                              setSelectedPost(post);
+                              setSelectedUser(user);
                             }}
                           >
                             <FaPenToSquare />
@@ -120,9 +163,9 @@ const Home = () => {
                             title="Delete"
                             className="btn btn-danger btn-sm"
                             data-bs-toggle="modal"
-                            data-bs-target="#deletePostModal"
+                            data-bs-target="#deleteUserModal"
                             onClick={() => {
-                              setSelectedPost(post);
+                              setSelectedUser(user);
                             }}
                           >
                             <FaTrashCan />
@@ -134,20 +177,20 @@ const Home = () => {
                 })}
 
               <TableFallback
-                isLoading={isLoadingPosts}
-                isError={isErrorPosts}
-                dataLength={posts?.records.length}
+                isLoading={isLoadingUsers}
+                isError={isErrorUsers}
+                dataLength={users?.records.length}
               />
             </tbody>
           </Table>
         </div>
       </div>
 
-      <AddPost refetchPosts={refetchPosts} />
-      <EditPost selectedPost={selectedPost} refetchPosts={refetchPosts} />
-      <DeletePost selectedPost={selectedPost} refetchPosts={refetchPosts} />
+      <AddUser refetchUsers={refetchUsers} />
+      <EditUser selectedUser={selectedUser} refetchUsers={refetchUsers} />
+      <DeleteUser selectedUser={selectedUser} refetchUsers={refetchUsers} />
     </>
   );
 };
 
-export default Home;
+export default Users;

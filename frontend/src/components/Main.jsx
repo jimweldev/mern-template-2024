@@ -127,9 +127,9 @@ const Main = ({ auth, removeAuth, handleSetIsSidebarCollapsed }) => {
                 <img
                   src={Avatar}
                   className="avatar img-fluid rounded me-1"
-                  alt={auth.email}
+                  alt={auth.name}
                 />
-                <span className="text-dark me-1">{auth.email}</span>
+                <span className="text-dark me-1">{auth.name}</span>
               </a>
               <div className="dropdown-menu dropdown-menu-end">
                 <a className="dropdown-item">

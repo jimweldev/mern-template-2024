@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { FiHome, FiPieChart } from "react-icons/fi";
+import { FiHome, FiPieChart, FiUser } from "react-icons/fi";
 
 const Nav = ({ auth, isSidebarCollapsed }) => {
   return (
@@ -19,6 +19,14 @@ const Nav = ({ auth, isSidebarCollapsed }) => {
               </span>
             </NavLink>
           </li>
+          {auth.isAdmin && (
+            <li className="sidebar-item">
+              <NavLink className="sidebar-link" to="/users">
+                <FiUser className="feather" />
+                Users
+              </NavLink>
+            </li>
+          )}
           {auth.isAdmin && (
             <li className="sidebar-item">
               <NavLink className="sidebar-link" to="/home">

@@ -1,19 +1,19 @@
 const express = require("express");
 
 const {
-  getUsers,
+  getAllUsers,
   getUser,
   createUser,
   updateUser,
   deleteUser,
-  getUsersPaginate,
+  getAllUsersPaginate,
 } = require("../controllers/userController");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.get("/paginate", authMiddleware, getUsersPaginate);
-router.get("/", authMiddleware, getUsers);
+router.get("/paginate", authMiddleware, getAllUsersPaginate);
+router.get("/", authMiddleware, getAllUsers);
 router.get("/:id", authMiddleware, getUser);
 router.post("/", authMiddleware, createUser);
 router.patch("/:id", authMiddleware, updateUser);

@@ -5,14 +5,14 @@ import { useForm } from "react-hook-form";
 import { privateInstance } from "@axios/interceptor";
 import { toast } from "react-toastify";
 
-const EditPost = ({ selectedPost, refetchPosts }) => {
+const EditUser = ({ selectedUser, refetchUsers }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const {
-    register: registerEditPost,
-    handleSubmit: handleSubmitEditPost,
-    formState: { errors: errorsEditPost },
-    setValue: setValueEditPost,
+    register: registerEditUser,
+    handleSubmit: handleSubmitEditUser,
+    formState: { errors: errorsEditUser },
+    setValue: setValueEditUser,
   } = useForm();
 
   const onSubmit = (data) => {
@@ -21,10 +21,10 @@ const EditPost = ({ selectedPost, refetchPosts }) => {
     const { _id, ...newData } = data;
 
     privateInstance
-      .patch(`/api/posts/${_id}`, newData)
+      .patch(`/api/users/${_id}`, newData)
       .then(() => {
-        refetchPosts();
-        toast.success("Successfully updated the post!");
+        refetchUsers();
+        toast.success("Successfully updated the user!");
       })
       .catch((error) => {
         toast.error(error.response.data.message);
@@ -35,24 +35,25 @@ const EditPost = ({ selectedPost, refetchPosts }) => {
   };
 
   useEffect(() => {
-    if (selectedPost) {
-      setValueEditPost("_id", selectedPost._id);
-      setValueEditPost("title", selectedPost.title);
+    if (selectedUser) {
+      setValueEditUser("_id", selectedUser._id);
+      setValueEditUser("name", selectedUser.name);
+      setValueEditUser("status", selectedUser.status);
     }
-  }, [selectedPost]);
+  }, [selectedUser]);
 
   return (
     <Portal>
       <form
         className="modal fade"
-        id="editPostModal"
+        id="editUserModal"
         tabIndex="-1"
-        onSubmit={handleSubmitEditPost(onSubmit)}
+        onSubmit={handleSubmitEditUser(onSubmit)}
       >
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h1 className="modal-title fs-5">Edit Post</h1>
+              <h1 className="modal-title fs-5">Edit User</h1>
               <button
                 type="button"
                 className="btn-close"
@@ -65,18 +66,35 @@ const EditPost = ({ selectedPost, refetchPosts }) => {
                 <input
                   className="form-control"
                   type="text"
-                  {...registerEditPost("_id", { required: true })}
+                  {...registerEditUser("_id", { required: true })}
                 />
               </div>
               <div className="mb-2">
-                <label>Title</label>
+                <label>Name</label>
                 <input
                   className="form-control"
                   type="text"
-                  {...registerEditPost("title", { required: true })}
+                  {...registerEditUser("name", { required: true })}
                 />
                 <div>
-                  {errorsEditPost.title && (
+                  {errorsEditUser.name && (
+                    <div className="text-danger small">
+                      This field is required
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="mb-2">
+                <label>Status</label>
+                <select
+                  className="form-select"
+                  {...registerEditUser("status", { required: true })}
+                >
+                  <option value="enabled">Enabled</option>
+                  <option value="disabled">Disabled</option>
+                </select>
+                <div>
+                  {errorsEditUser.status && (
                     <div className="text-danger small">
                       This field is required
                     </div>
@@ -107,4 +125,4 @@ const EditPost = ({ selectedPost, refetchPosts }) => {
   );
 };
 
-export default EditPost;
+export default EditUser;

@@ -38,6 +38,12 @@ const login = async (req, res) => {
     return res.status(400).json({ message: "Incorrect email address" });
   }
 
+  if (user.status === "disabled") {
+    return res
+      .status(400)
+      .json({ message: "The user's account status is disabled" });
+  }
+
   const isPasswordMatched = await bcrypt.compare(password, user.password);
 
   user = await User.findOne({ email }).select(
@@ -64,9 +70,9 @@ const login = async (req, res) => {
 
 // Register
 const register = async (req, res) => {
-  const { email, password, confirmPassword } = req.body;
+  const { email, password, confirmPassword, name } = req.body;
 
-  if (!email || !password || !confirmPassword) {
+  if (!email || !password || !confirmPassword || !name) {
     return res
       .status(400)
       .json({ message: "Please fill all the required fields" });
@@ -75,7 +81,7 @@ const register = async (req, res) => {
   const isEmailUsed = await User.findOne({ email });
 
   if (isEmailUsed) {
-    return res.status(400).json({ message: "Email already used" });
+    return res.status(400).json({ message: "Email is already used" });
   }
 
   if (!validator.isEmail(email)) {
@@ -90,7 +96,7 @@ const register = async (req, res) => {
       minNumbers: 1,
       minSymbols: 0,
     })) {
-    return res.status(400).json({ message: 'Password is not strong enough' });
+    return res.status(400).json({ message: "Password is not strong enough" });
   }
 
   if (password !== confirmPassword) {
@@ -105,6 +111,8 @@ const register = async (req, res) => {
     let user = await User.create({
       email,
       password: hashedPassword,
+      name,
+      isAdmin: true,
     });
 
     user = await User.findOne({ email }).select(

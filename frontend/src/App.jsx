@@ -16,7 +16,7 @@ import Login from "@pages/public/Login";
 // private
 import Home from "@pages/private/home/Home";
 import Admin from "@pages/private/admin/Admin";
-// const Home = lazy(() => import("@pages/private/Home"));
+const Users = lazy(() => import("@pages/private/users/Users"));
 
 const App = () => {
   const { auth } = useAuthStore((state) => ({
@@ -53,6 +53,7 @@ export const PrivateRoutes = ({ auth }) => {
     <Routes>
       <Route element={<PrivateLayout />}>
         <Route path="/" element={auth?.isAdmin ? <Admin /> : <Home />} />
+        <Route path="/users" element={<Users />} />
         <Route path="/home" element={<Home />} />
       </Route>
 

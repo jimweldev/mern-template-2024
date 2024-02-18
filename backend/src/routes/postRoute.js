@@ -1,19 +1,19 @@
 const express = require("express");
 
 const {
-  getPosts,
+  getAllPosts,
   getPost,
   createPost,
   updatePost,
   deletePost,
-  getPostsPaginate,
+  getAllPostsPaginate,
 } = require("../controllers/postController");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.get("/paginate", authMiddleware, getPostsPaginate);
-router.get("/", authMiddleware, getPosts);
+router.get("/paginate", authMiddleware, getAllPostsPaginate);
+router.get("/", authMiddleware, getAllPosts);
 router.get("/:id", authMiddleware, getPost);
 router.post("/", authMiddleware, createPost);
 router.patch("/:id", authMiddleware, updatePost);

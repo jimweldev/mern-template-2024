@@ -5,22 +5,22 @@ import { useForm } from "react-hook-form";
 import { privateInstance } from "@axios/interceptor";
 import { toast } from "react-toastify";
 
-const DeletePost = ({ selectedPost, refetchPosts }) => {
+const DeleteUser = ({ selectedUser, refetchUsers }) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const { handleSubmit: handleSubmitDeletePost } = useForm();
+  const { handleSubmit: handleSubmitDeleteUser } = useForm();
 
   const onSubmit = () => {
     setIsLoading(true);
 
     privateInstance
-      .delete(`/api/posts/${selectedPost._id}`)
+      .delete(`/api/users/${selectedUser._id}`)
       .then(() => {
-        refetchPosts();
-        toast.success("Successfully deleted the post!");
+        refetchUsers();
+        toast.success("Successfully deleted the user!");
 
         // close modal
-        document.getElementById("deletePostModalClose").click();
+        document.getElementById("deleteUserModalClose").click();
       })
       .catch((error) => {
         toast.error(error.response.data.message);
@@ -34,14 +34,14 @@ const DeletePost = ({ selectedPost, refetchPosts }) => {
     <Portal>
       <form
         className="modal fade"
-        id="deletePostModal"
+        id="deleteUserModal"
         tabIndex="-1"
-        onSubmit={handleSubmitDeletePost(onSubmit)}
+        onSubmit={handleSubmitDeleteUser(onSubmit)}
       >
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h1 className="modal-title fs-5">Delete Post</h1>
+              <h1 className="modal-title fs-5">Delete User</h1>
               <button
                 type="button"
                 className="btn-close"
@@ -50,13 +50,13 @@ const DeletePost = ({ selectedPost, refetchPosts }) => {
             </div>
             <div className="modal-body">
               <p className="fs-5">
-                Are you sure you want to delete <b>"{selectedPost?.title}"</b>?
+                Are you sure you want to delete <b>"{selectedUser?.name}"</b>?
               </p>
             </div>
             <div className="modal-footer">
               <button
                 className="btn btn-secondary"
-                id="deletePostModalClose"
+                id="deleteUserModalClose"
                 type="button"
                 data-bs-dismiss="modal"
               >
@@ -77,4 +77,4 @@ const DeletePost = ({ selectedPost, refetchPosts }) => {
   );
 };
 
-export default DeletePost;
+export default DeleteUser;
